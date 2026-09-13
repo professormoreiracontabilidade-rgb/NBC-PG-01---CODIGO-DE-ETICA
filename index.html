@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071b3d">
+<title>NBC PG 01 — Professor Moreira</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;min-height:100%;background:#071b3d;font-family:Arial,Helvetica,sans-serif}
+body{min-height:100dvh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.app{width:100%;height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 8px max(8px,env(safe-area-inset-bottom));gap:7px}
+.stage{position:relative;flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;touch-action:pan-y}
+#slide{display:block;max-width:100%;max-height:calc(100dvh - 76px);width:auto;height:auto;object-fit:contain;border-radius:10px;box-shadow:0 5px 22px #0008;user-select:none;-webkit-user-drag:none}
+.controls{height:54px;display:flex;align-items:center;justify-content:center;gap:9px;width:100%;flex:0 0 auto}
+button{border:0;border-radius:12px;background:#0d5aa7;color:#fff;font-weight:700;font-size:22px;min-width:58px;height:46px;padding:0 15px;cursor:pointer;box-shadow:0 2px 7px #0005}
+button:active{transform:scale(.96)}
+#reset{font-size:15px;background:#c62828;min-width:92px}
+.counter{color:#fff;font-size:17px;font-weight:700;min-width:70px;text-align:center}
+@media (min-width:700px){.app{max-width:620px}.stage{max-width:600px}}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="stage" id="stage">
+    <img id="slide" src="imagens/01.webp" alt="Slide 1 de 30" draggable="false">
+  </div>
+  <nav class="controls" aria-label="Controles do carrossel">
+    <button id="prev" aria-label="Imagem anterior">←</button>
+    <span class="counter" id="counter">1 / 30</span>
+    <button id="next" aria-label="Próxima imagem">→</button>
+    <button id="reset">Reiniciar</button>
+  </nav>
+</main>
+<script>
+(() => {
+  const total = 30;
+  let current = 1;
+  const slide = document.getElementById('slide');
+  const counter = document.getElementById('counter');
+  const stage = document.getElementById('stage');
+  const path = n => `imagens/${String(n).padStart(2,'0')}.webp`;
+
+  function preload(n){
+    if(n < 1 || n > total) return;
+    const im = new Image();
+    im.src = path(n);
+  }
+  function show(n){
+    current = ((n - 1 + total) % total) + 1;
+    slide.src = path(current);
+    slide.alt = `Slide ${current} de ${total}`;
+    counter.textContent = `${current} / ${total}`;
+    preload(current + 1);
+    preload(current - 1);
+  }
+
+  document.getElementById('prev').onclick = () => show(current - 1);
+  document.getElementById('next').onclick = () => show(current + 1);
+  document.getElementById('reset').onclick = () => show(1);
+
+  document.addEventListener('keydown', e => {
+    if(e.key === 'ArrowLeft') show(current - 1);
+    if(e.key === 'ArrowRight') show(current + 1);
+    if(e.key === 'Home') show(1);
+  });
+
+  let startX = 0, startY = 0;
+  stage.addEventListener('touchstart', e => {
+    const t = e.changedTouches[0];
+    startX = t.clientX; startY = t.clientY;
+  }, {passive:true});
+  stage.addEventListener('touchend', e => {
+    const t = e.changedTouches[0];
+    const dx = t.clientX - startX, dy = t.clientY - startY;
+    if(Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)){
+      dx < 0 ? show(current + 1) : show(current - 1);
+    }
+  }, {passive:true});
+
+  preload(2);
+})();
+</script>
+</body>
+</html>
