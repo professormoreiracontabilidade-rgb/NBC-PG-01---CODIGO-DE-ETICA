@@ -23,7 +23,7 @@ button:active{transform:scale(.96)}
 <body>
 <main class="app">
   <div class="stage" id="stage">
-    <img id="slide" src="imagens/01.webp" alt="Slide 1 de 30" draggable="false">
+    <img id="slide" src="01.webp" alt="Slide 1 de 30" draggable="false">
   </div>
   <nav class="controls" aria-label="Controles do carrossel">
     <button id="prev" aria-label="Imagem anterior">←</button>
@@ -39,7 +39,7 @@ button:active{transform:scale(.96)}
   const slide = document.getElementById('slide');
   const counter = document.getElementById('counter');
   const stage = document.getElementById('stage');
-  const path = n => `imagens/${String(n).padStart(2,'0')}.webp`;
+  const path = n => `${String(n).padStart(2,'0')}.webp`;
 
   function preload(n){
     if(n < 1 || n > total) return;
